@@ -2,7 +2,7 @@
 #
 # mqtt-mysensors by Theo Arends
 #
-# Provides MySensors MQTT service using a mysensors serial gateway version 1.4
+# Provides MySensors MQTT service using a mysensors serial gateway version 2.0
 #
 # Execute: mqtt-mysensors &
 #
@@ -12,6 +12,8 @@
 # Needs pyserial 2.7
 #   - apt-get install python-pip
 #   - pip install pyserial
+#   - for RPM based distributions
+#     - dnf install python3-paho-mqtt python3-pyserial
 #
 # Status format:
 #   <topic_prefix>/<node_id>/<child_id>/<variable_type>/status <value>
@@ -138,7 +140,7 @@ def on_message(client, userdata, msg):
     pass
 
 if M_INFO > 0:
-  print("MQTT mysensors serial gateway service.")
+  print("MQTT mysensors serial gateway service v2.0")
 
 while True:
   client = mqtt.Client()
