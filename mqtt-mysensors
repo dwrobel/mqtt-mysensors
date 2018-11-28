@@ -2,7 +2,7 @@
 #
 # mqtt-mysensors by Theo Arends
 #
-# Provides MySensors MQTT service using a mysensors serial gateway version 2.0
+# Provides MySensors MQTT service using a mysensors serial gateway version 2.3
 #
 # Execute: mqtt-mysensors &
 #
@@ -24,7 +24,7 @@
 #
 # **** Start of user configuration values
 
-serial_port = "/dev/ttyUSB0"   # MySensors serial gateway port
+serial_port = "/dev/ttyS99"    # MySensors serial gateway port
 serial_bps = 115200            # MySensors serial gateway baud rate
 
 broker = "localhost"           # MQTT broker ip address or name
@@ -50,11 +50,12 @@ C_INTERNAL = '3'
 C_STREAM = '4'
 
 # mysensor_data
-V_codes = ['TEMP', 'HUM', 'LIGHT', 'DIMMER', 'PRESSURE', 'FORECAST', 'RAIN', 'RAINRATE', 'WIND',
-'GUST', 'DIRECTON', 'UV', 'WEIGHT', 'DISTANCE', 'IMPEDANCE', 'ARMED', 'TRIPPED', 'WATT', 'KWH',
-'SCENE_ON', 'SCENE_OFF', 'HEATER', 'HEATER_SW', 'LIGHT_LEVEL', 'VAR1', 'VAR2', 'VAR3', 'VAR4', 
-'VAR5', 'UP', 'DOWN', 'STOP', 'IR_SEND', 'IR_RECEIVE', 'FLOW', 'VOLUME', 'LOCK_STATUS', 'DUST_LEVEL',
-'VOLTAGE', 'CURRENT']
+V_codes = ['TEMP', 'HUM', 'STATUS', 'DIMMER', 'PRESSURE', 'FORECAST', 'RAIN', 'RAINRATE', 'WIND', 'GUST',
+           'DIRECTON', 'UV', 'WEIGHT', 'DISTANCE', 'IMPEDANCE', 'ARMED', 'TRIPPED', 'WATT', 'KWH', 'SCENE_ON',
+           'SCENE_OFF', 'HVAC_FLOW_STATE', 'HVAC_SPEED', 'LIGHT_LEVEL', 'VAR1', 'VAR2', 'VAR3', 'VAR4', 'VAR5', 'UP',
+           'DOWN', 'STOP', 'IR_SEND', 'IR_RECEIVE', 'FLOW', 'VOLUME', 'LOCK_STATUS', 'DUST_LEVEL', 'VOLTAGE', 'CURRENT',
+           'RGB', 'RGBW', 'ID', 'UNIT_PREFIX', 'HVAC_SETPOINT_COOL', 'HVAC_SETPOINT_HEAT', 'HVAC_FLOW_MODE', 'TEXT', 'CUSTOM', 'POSITION',
+           'IR_RECORD', 'PH', 'ORP', 'EC', 'VAR', 'VA', 'POWER_FACTOR']
 
 # mysensor_internal
 I_codes = ['BATTERY_LEVEL', 'TIME', 'VERSION', 'ID_REQUEST', 'ID_RESPONSE', 'INCLUSION_MODE', 'CONFIG',
@@ -62,9 +63,10 @@ I_codes = ['BATTERY_LEVEL', 'TIME', 'VERSION', 'ID_REQUEST', 'ID_RESPONSE', 'INC
 'REBOOT', 'GATEWAY_READY']
 
 # mysensor_sensor
-S_codes = ['DOOR', 'MOTION', 'SMOKE', 'LIGHT', 'DIMMER', 'COVER', 'TEMP', 'HUM', 'BARO', 'WIND',
-'RAIN', 'UV', 'WEIGHT', 'POWER', 'HEATER', 'DISTANCE', 'LIGHT_LEVEL', 'ARDUINO_NODE',
-'ARDUINO_REPEATER_NODE', 'LOCK', 'IR', 'WATER', 'AIR_QUALITY', 'CUSTOM', 'DUST', 'SCENE_CONTROLLER']
+S_codes = ['DOOR', 'MOTION', 'SMOKE', 'BINARY', 'DIMMER', 'COVER', 'TEMP', 'HUM', 'BARO', 'WIND',
+           'RAIN', 'UV', 'WEIGHT', 'POWER', 'HEATER', 'DISTANCE', 'LIGHT_LEVEL', 'ARDUINO_NODE', 'ARDUINO_REPEATER_NODE', 'LOCK',
+           'IR', 'WATER', 'AIR_QUALITY', 'CUSTOM', 'DUST', 'SCENE_CONTROLLER', 'RGBW_LIGHT', 'S_RGBW_LIGHT', 'COLOR_SENSOR', 'HVAC',
+           'MULTIMETER', 'SPRINKLER', 'WATER_LEAK', 'SOUND', 'VIBRATION', 'MOISTURE', 'INFO', 'GAS', 'GPS', 'WATER_QUALITY']
 
 M_NACK = '0'
 M_ACK = '1'
@@ -74,7 +76,7 @@ B_codes = ['OFF', 'ON']
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
   if M_INFO > 0:
-    print("\nMQTT-MySensors service connected with result code "+str(rc))
+    print("MQTT-MySensors service connected with result code "+str(rc))
 
 # Subscribing in on_connect() means that if we lose the connection and
 # reconnect then subscriptions will be renewed.
@@ -117,7 +119,7 @@ def on_message(client, userdata, msg):
           command = C_SET
           payload = ";" + msg_payload
 
-          if mysensor_data == 'V_LIGHT':
+          if mysensor_data == 'V_STATUS':
             if msg_payload.upper() in B_codes:
               payload = ";"+str(B_codes.index(msg_payload.upper()))
 
@@ -140,7 +142,7 @@ def on_message(client, userdata, msg):
     pass
 
 if M_INFO > 0:
-  print("MQTT mysensors serial gateway service v2.0")
+  print("MQTT mysensors serial gateway service v2.3")
 
 while True:
   client = mqtt.Client()
@@ -160,7 +162,7 @@ while True:
       if M_INFO > 0:
         print("Warning: No broker found. Retry in one minute.")
 
-      time.sleep(60)
+      time.sleep(15)
       pass
 
   client.publish(topic_prefix+"/0/255/I_LOG_MESSAGE/status", "Connection with broker established.")
@@ -200,7 +202,10 @@ while True:
 
           if len(parts) > 4:
             mysensor_data = ''
-            payload = parts[5]
+            payload = ''
+
+            if len(parts) > 5:
+              payload = parts[5];
 
             if parts[2] == C_PRESENTATION:
               if int(parts[4]) < len(S_codes):
@@ -218,9 +223,11 @@ while True:
               else:  
                 mysensor_data = "V_UNKNOWN"
 
-              if mysensor_data == "V_LIGHT":
-                if int(parts[5]) < len(B_codes):
-                  payload = B_codes[int(parts[5])] # ON / OFF
+              if mysensor_data == "V_STATUS":
+                if len(parts) > 5:
+                  if int(parts[5]) < len(B_codes):
+                    payload = B_codes[int(parts[5])] # ON / OFF
+
             mytopic = topic_prefix+"/"+parts[0]+"/"+parts[1]+"/"+mysensor_data+"/status"
 
             if M_INFO > 2:
