@@ -1,0 +1,11 @@
+[Unit]
+Description=MySensors MQTT service using a mysensors serial gateway
+After=mosquitto.service
+Before=openhab2.service
+Wants=network-online.target
+
+[Service]
+ExecStart=/usr/bin/mqtt-mysensors
+
+[Install]
+WantedBy=multi-user.target
