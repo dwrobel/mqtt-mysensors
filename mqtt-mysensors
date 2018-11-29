@@ -32,6 +32,8 @@ broker_port = 1883             # MQTT broker port
 
 topic_prefix = "boiler"        # MQTT mysensors topic prefix
 
+retry_time = 15                # Seconds
+
 M_INFO = 1                     # Print messages: 0 - none, 1 - Startup, 2 - Serial, 3 - All
 
 # **** End of user configuration values
@@ -160,9 +162,9 @@ while True:
       print("Exception: {}".format(e))
     except:
       if M_INFO > 0:
-        print("Warning: No broker found. Retry in one minute.")
+        print("Warning: No broker found. Retry in {} seconds.".format(retry_time))
 
-      time.sleep(15)
+      time.sleep(retry_time)
       pass
 
   client.publish(topic_prefix+"/0/255/I_LOG_MESSAGE/status", "Connection with broker established.")
@@ -177,10 +179,10 @@ while True:
     except:
 
       if M_INFO > 0:
-        print("Warning: No serial port found. Retry in one minute.")
+        print("Warning: No serial port found. Retry in {} seconds.".format(retry_time))
 
-      client.publish(topic_prefix+"/0/255/I_LOG_MESSAGE/status", "No serial Gateway found but will retry in one minute.")
-      time.sleep(60)
+      client.publish(topic_prefix+"/0/255/I_LOG_MESSAGE/status", "No serial Gateway found but will retry in {} seconds.".format((retry_time)))
+      time.sleep(retry_time)
       pass
 
 #  client.publish(topic_prefix+"/0/255/I_GATEWAY_READY", "MQTT Gateway startup complete.")
