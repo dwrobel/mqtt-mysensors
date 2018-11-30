@@ -147,7 +147,7 @@ if M_INFO > 0:
   print("MQTT mysensors serial gateway service v2.3")
 
 while True:
-  client = mqtt.Client()
+  client = mqtt.Client(client_id="mqtt-mysensors", clean_session=False)
   client.on_connect = on_connect
   client.on_message = on_message
 
@@ -235,7 +235,7 @@ while True:
             if M_INFO > 2:
               print(" MQTT published |"+mytopic+"|"+payload+"|")
 
-            client.publish(mytopic, payload)
+            client.publish(mytopic, payload=payload, retain=True)
 
           rv = ''
       rc = client.loop()
