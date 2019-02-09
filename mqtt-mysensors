@@ -170,7 +170,7 @@ while True:
   sf = 1
   while sf == 1:
     try:
-      ser = serial.Serial(port=serial_port, baudrate=serial_bps, timeout=10)
+      ser = serial.Serial(port=serial_port, baudrate=serial_bps, timeout=0)
       sf = 0
     except KeyboardInterrupt:
       sys.exit(1)
