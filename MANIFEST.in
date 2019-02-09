@@ -1,0 +1,9 @@
+#exclude .git
+#exclude build
+#exclude sdist
+exclude *.py
+include COPYING
+include README.md
+include mqtt-mysensors.service
+include mqtt-mysensors
+include setup.py
