@@ -21,11 +21,19 @@
 # Command format:
 #   <topic_prefix>/<node_id>/<child_id>/<variable_type>/command <value>
 
+import sys
+import time
+import traceback
+
+import paho.mqtt.client as mqtt
+
+import serial
+
 #
 # **** Start of user configuration values
 
 serial_port = "/dev/ttyS99"    # MySensors serial gateway port
-serial_bps = 115200            # MySensors serial gateway baud rate
+serial_bpst = 115200           # MySensors serial gateway baud rate
 
 broker = "localhost"           # MQTT broker ip address or name
 broker_port = 1883             # MQTT broker port
@@ -37,12 +45,6 @@ retry_time = 15                # Seconds
 M_INFO = 1                     # Print messages: 0 - none, 1 - Startup, 2 - Serial, 3 - All
 
 # **** End of user configuration values
-
-import sys
-import paho.mqtt.client as mqtt
-import serial
-import time
-import traceback
 
 # mysensor_command
 C_PRESENTATION = '0'
@@ -61,8 +63,8 @@ V_codes = ['TEMP', 'HUM', 'STATUS', 'DIMMER', 'PRESSURE', 'FORECAST', 'RAIN', 'R
 
 # mysensor_internal
 I_codes = ['BATTERY_LEVEL', 'TIME', 'VERSION', 'ID_REQUEST', 'ID_RESPONSE', 'INCLUSION_MODE', 'CONFIG',
-'FIND_PARENT', 'FIND_PARENT_RESPONSE', 'LOG_MESSAGE', 'CHILDREN', 'SKETCH_NAME', 'SKETCH_VERSION',
-'REBOOT', 'GATEWAY_READY']
+           'FIND_PARENT', 'FIND_PARENT_RESPONSE', 'LOG_MESSAGE', 'CHILDREN', 'SKETCH_NAME', 'SKETCH_VERSION',
+           'REBOOT', 'GATEWAY_READY']
 
 # mysensor_sensor
 S_codes = ['DOOR', 'MOTION', 'SMOKE', 'BINARY', 'DIMMER', 'COVER', 'TEMP', 'HUM', 'BARO', 'WIND',
@@ -75,14 +77,16 @@ M_ACK = '1'
 
 B_codes = ['OFF', 'ON']
 
+
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
   if M_INFO > 0:
-    print("MQTT-MySensors service connected with result code "+str(rc))
+    print("MQTT-MySensors service connected with result code " + str(rc))
 
 # Subscribing in on_connect() means that if we lose the connection and
 # reconnect then subscriptions will be renewed.
-  client.subscribe(topic_prefix+"/#")
+  client.subscribe(topic_prefix + "/#")
+
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
@@ -123,17 +127,17 @@ def on_message(client, userdata, msg):
 
           if mysensor_data == 'V_STATUS':
             if msg_payload.upper() in B_codes:
-              payload = ";"+str(B_codes.index(msg_payload.upper()))
+              payload = ";" + str(B_codes.index(msg_payload.upper()))
 
         if mysensor_data[2:22] in V_codes:
           idx = str(V_codes.index(mysensor_data[2:22]))
 
-      myserial = parts[1]+";"+parts[2]+";"+command+";0;"+idx+payload
+      myserial = parts[1] + ";" + parts[2] + ";" + command + ";0;" + idx + payload
 
       if M_INFO > 1:
-        print("     Serial out |"+myserial+"|")
+        print("     Serial out |" + myserial + "|")
 
-      ser.write((myserial+"\n").encode("ascii"))
+      ser.write((myserial + "\n").encode("ascii"))
   except KeyboardInterrupt:
     sys.exit(1)
   except Exception as e:
@@ -142,6 +146,7 @@ def on_message(client, userdata, msg):
     pass
   except:
     pass
+
 
 if M_INFO > 0:
   print("MQTT mysensors serial gateway service v2.3")
@@ -165,7 +170,7 @@ while True:
       time.sleep(retry_time)
       pass
 
-  client.publish(topic_prefix+"/0/255/I_LOG_MESSAGE/status", "Connection with broker established.")
+  client.publish(topic_prefix + "/0/255/I_LOG_MESSAGE/status", "Connection with broker established.")
 
   sf = 1
   while sf == 1:
@@ -179,7 +184,7 @@ while True:
       if M_INFO > 0:
         print("Warning: No serial port found. Retry in {} seconds.".format(retry_time))
 
-      client.publish(topic_prefix+"/0/255/I_LOG_MESSAGE/status", "No serial Gateway found but will retry in {} seconds.".format((retry_time)))
+      client.publish(topic_prefix + "/0/255/I_LOG_MESSAGE/status", "No serial Gateway found but will retry in {} seconds.".format((retry_time)))
       time.sleep(retry_time)
       pass
 
@@ -192,11 +197,11 @@ while True:
         ch = (ser.read(1)).decode()
         rv += ch
 
-        if ch=='\n':
+        if ch == '\n':
           rv = rv.rstrip()
 
           if M_INFO > 1:
-            print("      Serial in |"+rv+"|")
+            print("      Serial in |" + rv + "|")
 
           parts = rv.split(";")  # 2;0;1;0;0;25.0
 
@@ -205,33 +210,33 @@ while True:
             payload = ''
 
             if len(parts) > 5:
-              payload = parts[5];
+              payload = parts[5]
 
             if parts[2] == C_PRESENTATION:
               if int(parts[4]) < len(S_codes):
-                mysensor_data = "S_"+S_codes[int(parts[4])]
+                mysensor_data = "S_" + S_codes[int(parts[4])]
               else:
                 mysensor_data = "S_UNKNOWN"
             elif parts[2] == C_INTERNAL:
               if int(parts[4]) < len(I_codes):
-                mysensor_data = "I_"+I_codes[int(parts[4])]
+                mysensor_data = "I_" + I_codes[int(parts[4])]
               else:
                 mysensor_data = "I_UNKNOWN"
             else:
               if int(parts[4]) < len(V_codes):
-                mysensor_data = "V_"+V_codes[int(parts[4])]
-              else:  
+                mysensor_data = "V_" + V_codes[int(parts[4])]
+              else:
                 mysensor_data = "V_UNKNOWN"
 
               if mysensor_data == "V_STATUS":
                 if len(parts) > 5:
                   if int(parts[5]) < len(B_codes):
-                    payload = B_codes[int(parts[5])] # ON / OFF
+                    payload = B_codes[int(parts[5])]  # ON / OFF
 
-            mytopic = topic_prefix+"/"+parts[0]+"/"+parts[1]+"/"+mysensor_data+"/status"
+            mytopic = topic_prefix + "/" + parts[0] + "/" + parts[1] + "/" + mysensor_data + "/status"
 
             if M_INFO > 2:
-              print(" MQTT published |"+mytopic+"|"+payload+"|")
+              print(" MQTT published |" + mytopic + "|" + payload + "|")
 
             client.publish(mytopic, payload=payload, retain=True)
 
@@ -243,7 +248,6 @@ while True:
       print("Exception: {}".format(e))
       traceback.print_exc(file=sys.stdout)
       rc = 1
-      pass
 
   ser.close()
   print("Warning: Communication error - Restarting.")
