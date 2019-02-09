@@ -159,10 +159,8 @@ while True:
     except KeyboardInterrupt:
       sys.exit(1)
     except Exception as e:
-      print("Exception: {}".format(e))
-    except:
       if M_INFO > 0:
-        print("Warning: No broker found. Retry in {} seconds.".format(retry_time))
+        print("Warning: mqtt: {}. Retry in {} seconds.".format(e, retry_time))
 
       time.sleep(retry_time)
       pass
