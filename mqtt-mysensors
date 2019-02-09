@@ -99,7 +99,7 @@ B_codes: List[str] = ['OFF', 'ON']
 
 
 # The callback for when the client receives a CONNACK response from the server.
-def on_connect(client: mqtt.Client, userdata: None, flags: Mapping[str, int], rc: int):
+def on_connect(client: mqtt.Client, userdata: None, flags: Mapping[str, int], rc: int) -> None:
     if M_INFO > 0:
         print("MQTT-MySensors service connected with result code " + str(rc))
 
@@ -109,7 +109,7 @@ def on_connect(client: mqtt.Client, userdata: None, flags: Mapping[str, int], rc
 
 
 # The callback for when a PUBLISH message is received from the server.
-def on_message(client: mqtt.Client, userdata: None, msg: mqtt.MQTTMessage):
+def on_message(client: mqtt.Client, userdata: None, msg: mqtt.MQTTMessage) -> None:
     parts: List[str] = msg.topic.split("/")  # topic_prefix/0/23/V_TEMP/command
 
     if len(parts) < 5:
@@ -125,23 +125,23 @@ def on_message(client: mqtt.Client, userdata: None, msg: mqtt.MQTTMessage):
 
     try:
         if (len(parts) > 3) and (int(parts[1]) < 256) and (int(parts[2]) < 256):
-            command: Command
+            command: str
             idx: str = "0"
             mysensor_data: str = parts[3].upper()
             msg_payload: str = payload.rstrip()
             payload = ""
 
             if mysensor_data[0] == 'I':
-                command = Command.INTERNAL
+                command = Command.INTERNAL.value
                 if len(msg_payload) != 0:
                     payload = ";" + msg_payload
                 if mysensor_data[2:22] in I_codes:
                     idx = str(I_codes.index(mysensor_data[2:22]))
             else:
                 if len(msg_payload) == 0:
-                    command = Command.REQ
+                    command = Command.REQ.value
                 else:
-                    command = Command.SET
+                    command = Command.SET.value
                     payload = ";" + msg_payload
 
                     if mysensor_data == 'V_STATUS':
@@ -151,7 +151,7 @@ def on_message(client: mqtt.Client, userdata: None, msg: mqtt.MQTTMessage):
                 if mysensor_data[2:22] in V_codes:
                     idx = str(V_codes.index(mysensor_data[2:22]))
 
-            myserial: str = parts[1] + ";" + parts[2] + ";" + str(command) + ";0;" + idx + payload
+            myserial: str = parts[1] + ";" + parts[2] + ";" + command + ";0;" + idx + payload
 
             if M_INFO > 1:
                 print("     Serial out |" + myserial + "|")
@@ -231,12 +231,12 @@ while True:
                     if len(parts) > 5:
                         payload = parts[5]
 
-                    if parts[2] == Command.PRESENTATION:
+                    if Command(parts[2]) == Command.PRESENTATION:
                         if int(parts[4]) < len(S_codes):
                             mysensor_data = "S_" + S_codes[int(parts[4])]
                         else:
                             mysensor_data = "S_UNKNOWN"
-                    elif parts[2] == Command.INTERNAL:
+                    elif Command(parts[2]) == Command.INTERNAL:
                         if int(parts[4]) < len(I_codes):
                             mysensor_data = "I_" + I_codes[int(parts[4])]
                         else:
