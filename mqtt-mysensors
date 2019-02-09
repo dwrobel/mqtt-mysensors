@@ -46,7 +46,6 @@ import paho.mqtt.client as mqtt
 
 import serial
 
-#
 # **** Start of user configuration values
 
 serial_port: str = "/dev/ttyUSB0"   # MySensors serial gateway port
@@ -63,6 +62,7 @@ M_INFO: int = 1                     # Print messages: 0 - none, 1 - Startup, 2 -
 
 # **** End of user configuration values
 
+
 # mysensor_command
 @unique
 class Command(Enum):
@@ -71,6 +71,7 @@ class Command(Enum):
     REQ: str = '2'
     INTERNAL: str = '3'
     STREAM: str = '4'
+
 
 # mysensor_data
 V_codes: List[str] =\

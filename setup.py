@@ -18,11 +18,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-import distutils.command.install_scripts
-import glob
-import platform
-import shutil
-
 from setuptools import setup
 
 setup(
