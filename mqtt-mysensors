@@ -48,7 +48,7 @@ import serial
 
 # **** Start of user configuration values
 
-serial_port: str = "/dev/ttyUSB0"   # MySensors serial gateway port
+serial_port: str = "/dev/ttyS99"    # MySensors serial gateway port
 serial_bps: int = 115200            # MySensors serial gateway baud rate
 
 broker: str = "localhost"           # MQTT broker ip address or name
