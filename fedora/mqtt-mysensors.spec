@@ -5,13 +5,14 @@
 
 Name:           mqtt-mysensors
 Version:        2.3.1
-Release:        1.%{date}git%{shortcommit0}%{?dist}
+Release:        2.%{date}git%{shortcommit0}%{?dist}
 Summary:        MQTT service for mysensors serial gateway
 License:        GPLv3+
 Url:            https://github.com/%{the_owner}/%{name}
 Source0:        https://github.com/%{the_owner}/%{name}/archive/%{commit0}.tar.gz#/%{name}-%{version}-%{date}git%{shortcommit0}.tar.gz
 BuildArch:      noarch
 
+BuildRequires:  %{py3_dist setuptools}
 BuildRequires:  python3-devel
 BuildRequires:  systemd-rpm-macros
 
@@ -74,6 +75,9 @@ install -D -p -m 0644 50-usb-arduino.rules %{buildroot}%{_udevrulesdir}/50-usb-a
 
 
 %changelog
+* Thu Sep 02 2021 Damian Wrobel <dwrobel@ertelnet.rybnik.pl> - 2.3.1-2.20210902gitdffedb9ef1b7
+- Add BR python setuptools.
+
 * Thu Sep 02 2021 Damian Wrobel <dwrobel@ertelnet.rybnik.pl> - 2.3.1-0.20210902gitdffedb9ef1b7
 - Update to the latest version.
 
