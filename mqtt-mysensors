@@ -215,7 +215,13 @@ while True:
             rv: str = ''
 
             while ser.in_waiting > 0:
-                ch: str = (ser.read(1)).decode()
+                ch: str = ''
+
+                try:
+                    ch = (ser.read(1)).decode()
+                except UnicodeDecodeError:
+                    continue
+
                 rv += ch
 
                 if ch != '\n':
