@@ -1,11 +1,11 @@
 %global date 20210902
-%global commit0 dffedb9ef1b7d2320908d61836c034c8484f34d9
+%global commit0 2e55a0e0051fe8cb528c9b0a0fbe8c1ddb8e0be5
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:12})
 %global the_owner dwrobel
 
 Name:           mqtt-mysensors
-Version:        2.3.1
-Release:        2.%{date}git%{shortcommit0}%{?dist}
+Version:        2.3.2
+Release:        1.%{date}git%{shortcommit0}%{?dist}
 Summary:        MQTT service for mysensors serial gateway
 License:        GPLv3+
 Url:            https://github.com/%{the_owner}/%{name}
@@ -75,6 +75,9 @@ install -D -p -m 0644 50-usb-arduino.rules %{buildroot}%{_udevrulesdir}/50-usb-a
 
 
 %changelog
+* Thu Sep 02 2021 Damian Wrobel <dwrobel@ertelnet.rybnik.pl> - 2.3.2-1.20210902git2e55a0e0051f
+- Update to the latest version.
+
 * Thu Sep 02 2021 Damian Wrobel <dwrobel@ertelnet.rybnik.pl> - 2.3.1-2.20210902gitdffedb9ef1b7
 - Add BR python setuptools.
 
