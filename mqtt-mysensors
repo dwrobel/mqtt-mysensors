@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3 -s
 #
 # Provides MySensors MQTT service using a mysensors serial gateway version 2.3
 #
