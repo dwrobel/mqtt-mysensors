@@ -171,6 +171,7 @@ if M_INFO > 0:
     print("MQTT mysensors serial gateway service v2.3")
 
 while True:
+    ser = None
     client = mqtt.Client(client_id="mqtt-mysensors", clean_session=False)
     client.on_connect = on_connect
     client.on_message = on_message
@@ -193,11 +194,14 @@ while True:
 
     while True:
         try:
+            if ser is not None:
+                ser.close()
+                ser = None
             ser = serial.Serial(port=serial_port, baudrate=serial_bps, timeout=0)
             break
         except KeyboardInterrupt:
             sys.exit(1)
-        except:
+        except Exception:
             if M_INFO > 0:
                 print("Warning: No serial port found. Retry in {} seconds.".format(retry_time))
 
