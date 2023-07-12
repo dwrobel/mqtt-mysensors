@@ -75,6 +75,9 @@ install -D -p -m 0644 50-usb-arduino.rules %{buildroot}%{_udevrulesdir}/50-usb-a
 
 
 %changelog
+* Wed Jul 12 2023 Damian Wrobel <dwrobel@ertelnet.rybnik.pl> - 2.3.2-2.20210902git2e55a0e0051f
+- Rebuild for python-3.12
+
 * Thu Sep 02 2021 Damian Wrobel <dwrobel@ertelnet.rybnik.pl> - 2.3.2-1.20210902git2e55a0e0051f
 - Update to the latest version.
 
