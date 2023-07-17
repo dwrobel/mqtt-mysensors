@@ -98,10 +98,21 @@ S_codes: List[str] =\
 B_codes: List[str] = ['OFF', 'ON']
 
 
+def reset_mysensor(ser: serial.Serial) -> None:
+    if M_INFO > 0:
+        print("MQTT-MySensors resetting device", flush=True)
+
+    # Toggle DTR to reset Arduino
+    ser.setDTR(False)
+    time.sleep(0.2)
+    ser.flushInput()
+    ser.setDTR(True)
+
+
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client: mqtt.Client, userdata: None, flags: Mapping[str, int], rc: int) -> None:
     if M_INFO > 0:
-        print("MQTT-MySensors service connected with result code " + str(rc))
+        print("MQTT-MySensors service connected with result code " + str(rc), flush=True)
 
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
@@ -121,7 +132,7 @@ def on_message(client: mqtt.Client, userdata: None, msg: mqtt.MQTTMessage) -> No
     payload: str = msg.payload.decode()
 
     if M_INFO > 2:
-        print("MQTT subscribed |{}|{}|".format(msg.topic, payload))
+        print("MQTT subscribed |{}|{}|".format(msg.topic, payload), flush=True)
 
     try:
         if (len(parts) > 3) and (int(parts[1]) < 256) and (int(parts[2]) < 256):
@@ -154,13 +165,13 @@ def on_message(client: mqtt.Client, userdata: None, msg: mqtt.MQTTMessage) -> No
             myserial: str = parts[1] + ";" + parts[2] + ";" + command + ";0;" + idx + payload
 
             if M_INFO > 1:
-                print("     Serial out |" + myserial + "|")
+                print("     Serial out |" + myserial + "|", flush=True)
 
             ser.write((myserial + "\n").encode("ascii"))
     except KeyboardInterrupt:
         sys.exit(1)
     except Exception as e:
-        print("Exception: {}".format(e))
+        print("Exception: {}".format(e), flush=True)
         traceback.print_exc(file=sys.stdout)
         pass
     except:
@@ -168,7 +179,7 @@ def on_message(client: mqtt.Client, userdata: None, msg: mqtt.MQTTMessage) -> No
 
 
 if M_INFO > 0:
-    print("MQTT mysensors serial gateway service v2.3")
+    print("MQTT-MySensors serial gateway service v2.3", flush=True)
 
 while True:
     ser = None
@@ -185,31 +196,34 @@ while True:
             sys.exit(1)
         except Exception as e:
             if M_INFO > 0:
-                print("Warning: mqtt: {}. Retry in {} seconds.".format(e, retry_time))
+                print("Warning: mqtt: {}. Retry in {} seconds.".format(e, retry_time), flush=True)
 
             time.sleep(retry_time)
             pass
 
-    client.publish(topic_prefix + "/0/255/I_LOG_MESSAGE/status", "Connection with broker established.")
+    client.publish(topic_prefix + "/0/255/I_LOG_MESSAGE/status", "Connection with broker established.", retain=True)
 
     while True:
         try:
             if ser is not None:
                 ser.close()
                 ser = None
+
             ser = serial.Serial(port=serial_port, baudrate=serial_bps, timeout=0)
+            reset_mysensor(ser)
+
             break
         except KeyboardInterrupt:
             sys.exit(1)
         except Exception:
             if M_INFO > 0:
-                print("Warning: No serial port found. Retry in {} seconds.".format(retry_time))
+                print("Warning: No serial port found. Retry in {} seconds.".format(retry_time), flush=True)
 
             client.publish(topic_prefix + "/0/255/I_LOG_MESSAGE/status", "No serial Gateway found but will retry in {} seconds.".format((retry_time)))
             time.sleep(retry_time)
             pass
 
-    # client.publish(topic_prefix+"/0/255/I_GATEWAY_READY", "MQTT Gateway startup complete.")
+    # client.publish(topic_prefix+"/0/255/I_GATEWAY_READY", "MQTT Gateway startup complete.", retain=True)
     while rc == 0:
         try:
             rv: str = ''
@@ -230,7 +244,7 @@ while True:
                 rv = rv.rstrip()
 
                 if M_INFO > 1:
-                    print("      Serial in |" + rv + "|")
+                    print("      Serial in |" + rv + "|", flush=True)
 
                 parts = rv.split(";")  # 2;0;1;0;0;25.0
 
@@ -265,7 +279,7 @@ while True:
                     mytopic = topic_prefix + "/" + parts[0] + "/" + parts[1] + "/" + mysensor_data + "/status"
 
                     if M_INFO > 2:
-                        print(" MQTT published |" + mytopic + "|" + payload + "|")
+                        print(" MQTT published |" + mytopic + "|" + payload + "|", flush=True)
 
                     client.publish(mytopic, payload=payload, retain=True)
 
@@ -274,9 +288,9 @@ while True:
         except KeyboardInterrupt:
             sys.exit(1)
         except Exception as e:
-            print("Exception: {}".format(e))
+            print("Exception: {}".format(e), flush=True)
             traceback.print_exc(file=sys.stdout)
             rc = 1
 
     ser.close()
-    print("Warning: Communication error - Restarting.")
+    print("Warning: Communication error - Restarting.", flush=True)
