@@ -1,11 +1,11 @@
-%global date 20210902
-%global commit0 2e55a0e0051fe8cb528c9b0a0fbe8c1ddb8e0be5
+%global date 20230717
+%global commit0 0d56fac7ace2ad33db9aa49707beba92fdc3b6d0
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:12})
 %global the_owner dwrobel
 
 Name:           mqtt-mysensors
 Version:        2.3.2
-Release:        1.%{date}git%{shortcommit0}%{?dist}
+Release:        2.%{date}git%{shortcommit0}%{?dist}
 Summary:        MQTT service for mysensors serial gateway
 License:        GPLv3+
 Url:            https://github.com/%{the_owner}/%{name}
@@ -75,6 +75,9 @@ install -D -p -m 0644 50-usb-arduino.rules %{buildroot}%{_udevrulesdir}/50-usb-a
 
 
 %changelog
+* Fri Jul 21 2023 Damian Wrobel <dwrobel@ertelnet.rybnik.pl> - 2.3.2-2.20230717git2e55a0e0051f
+- Add resseting mysensor device
+
 * Wed Jul 12 2023 Damian Wrobel <dwrobel@ertelnet.rybnik.pl> - 2.3.2-2.20210902git2e55a0e0051f
 - Rebuild for python-3.12
 
