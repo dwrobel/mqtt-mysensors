@@ -209,7 +209,7 @@ while True:
                 ser.close()
                 ser = None
 
-            ser = serial.Serial(port=serial_port, baudrate=serial_bps, timeout=0)
+            ser = serial.Serial(port=serial_port, baudrate=serial_bps, timeout=0.1)
             reset_mysensor(ser)
 
             break
@@ -288,7 +288,7 @@ while True:
         except KeyboardInterrupt:
             sys.exit(1)
         except Exception as e:
-            print("Exception: {}".format(e), flush=True)
+            print("Exception: {} rv: {}".format(e, rv), flush=True)
             traceback.print_exc(file=sys.stdout)
             rc = 1
 
