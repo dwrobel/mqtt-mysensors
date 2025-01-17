@@ -23,7 +23,7 @@ from setuptools import setup
 setup(
     name='mqtt-mysensors',
 
-    version='2.3.2',
+    version='2.3.4',
 
     description='MySensors MQTT service using a mysensors serial gateway',
 
