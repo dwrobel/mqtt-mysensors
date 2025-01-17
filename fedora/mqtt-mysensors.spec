@@ -1,11 +1,11 @@
-%global date 20230717
-%global commit0 0d56fac7ace2ad33db9aa49707beba92fdc3b6d0
+%global date 20250117
+%global commit0 6aad64d17cceab29a87f7ebacbba27f86991f6ea
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:12})
 %global the_owner dwrobel
 
 Name:           mqtt-mysensors
-Version:        2.3.2
-Release:        3.%{date}git%{shortcommit0}%{?dist}
+Version:        2.3.3
+Release:        1.%{date}git%{shortcommit0}%{?dist}
 Summary:        MQTT service for mysensors serial gateway
 License:        GPLv3+
 Url:            https://github.com/%{the_owner}/%{name}
@@ -17,8 +17,6 @@ BuildRequires:  python3-devel
 BuildRequires:  systemd-rpm-macros
 
 Requires:       systemd
-Requires:       %{py3_dist paho-mqtt}
-Requires:       %{py3_dist pyserial}
 
 %description
 Provides MySensors MQTT service using a mysensors serial gateway version >=2.3
@@ -32,6 +30,9 @@ BuildRequires:  systemd-udev
 Requires:       systemd-udev
 Requires:       mqtt-mysensors = %{version}-%{release}
 
+
+%generate_buildrequires
+%pyproject_buildrequires
 
 %description udev
 Provides udev rules for attaching Arduino Nano
