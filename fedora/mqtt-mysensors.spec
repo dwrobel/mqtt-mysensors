@@ -1,10 +1,10 @@
 %global date 20250117
-%global commit0 6aad64d17cceab29a87f7ebacbba27f86991f6ea
+%global commit0 1336b21511b5c3441d35d9a16c097e20ac73e239
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:12})
 %global the_owner dwrobel
 
 Name:           mqtt-mysensors
-Version:        2.3.3
+Version:        2.3.4
 Release:        1.%{date}git%{shortcommit0}%{?dist}
 Summary:        MQTT service for mysensors serial gateway
 License:        GPLv3+
@@ -76,6 +76,9 @@ install -D -p -m 0644 50-usb-arduino.rules %{buildroot}%{_udevrulesdir}/50-usb-a
 
 
 %changelog
+* Fri Jan 17 2025 Damian Wrobel <dwrobel@ertelnet.rybnik.pl> - 2.3.4-2.20250117git6aad64d17cce
+- Update to the latest version
+
 * Fri Dec 22 2023 Damian Wrobel <dwrobel@ertelnet.rybnik.pl> - 2.3.2-3.20230717git0d56fac7ace2
 - Rebuild for F39
 
