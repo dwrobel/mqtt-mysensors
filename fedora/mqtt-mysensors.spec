@@ -5,7 +5,7 @@
 
 Name:           mqtt-mysensors
 Version:        2.3.4
-Release:        1.%{date}git%{shortcommit0}%{?dist}
+Release:        3.%{date}git%{shortcommit0}%{?dist}
 Summary:        MQTT service for mysensors serial gateway
 License:        GPLv3+
 Url:            https://github.com/%{the_owner}/%{name}
@@ -76,6 +76,9 @@ install -D -p -m 0644 50-usb-arduino.rules %{buildroot}%{_udevrulesdir}/50-usb-a
 
 
 %changelog
+* Wed Feb 05 2025 Damian Wrobel <dwrobel@ertelnet.rybnik.pl> - 2.3.4-3.20250117git1336b21511b5
+- Rebuild for new Fedora
+
 * Fri Jan 17 2025 Damian Wrobel <dwrobel@ertelnet.rybnik.pl> - 2.3.4-2.20250117git6aad64d17cce
 - Update to the latest version
 
