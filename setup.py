@@ -43,12 +43,6 @@ setup(
         'pyserial'
     ],
 
-    include_package_data=True,
-
-    data_files=[
-        ('/usr/lib/systemd/system/', ['mqtt-mysensors.service'])
-    ],
-
     scripts=['mqtt-mysensors'],
 
     setup_requires=[]
