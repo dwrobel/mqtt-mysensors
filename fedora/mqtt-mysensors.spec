@@ -1,18 +1,17 @@
-%global date 20250117
-%global commit0 1336b21511b5c3441d35d9a16c097e20ac73e239
+%global date 20260210
+%global commit0 d017f861049bb743e0128c97d71ca8d86528d862
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:12})
 %global the_owner dwrobel
 
 Name:           mqtt-mysensors
 Version:        2.3.4
-Release:        4.%{date}git%{shortcommit0}%{?dist}
+Release:        5.%{date}git%{shortcommit0}%{?dist}
 Summary:        MQTT service for mysensors serial gateway
 License:        GPLv3+
 Url:            https://github.com/%{the_owner}/%{name}
 Source0:        https://github.com/%{the_owner}/%{name}/archive/%{commit0}.tar.gz#/%{name}-%{version}-%{date}git%{shortcommit0}.tar.gz
 BuildArch:      noarch
 
-BuildRequires:  %{py3_dist setuptools}
 BuildRequires:  python3-devel
 BuildRequires:  systemd-rpm-macros
 
@@ -31,9 +30,6 @@ Requires:       systemd-udev
 Requires:       mqtt-mysensors = %{version}-%{release}
 
 
-%generate_buildrequires
-%pyproject_buildrequires
-
 %description udev
 Provides udev rules for attaching Arduino Nano
 
@@ -41,13 +37,20 @@ Provides udev rules for attaching Arduino Nano
 %prep
 %autosetup -n %{name}-%{commit0}
 
+%generate_buildrequires
+%pyproject_buildrequires
+
 
 %build
-%py3_build
+%pyproject_wheel
 
 
 %install
-%py3_install
+%pyproject_install
+
+# Install systemd service file
+install -p -m 0644 -D %{name}.service %{buildroot}%{_unitdir}/%{name}.service
+
 install -D -p -m 0644 50-usb-arduino.rules %{buildroot}%{_udevrulesdir}/50-usb-arduino.rules
 
 
@@ -76,6 +79,10 @@ install -D -p -m 0644 50-usb-arduino.rules %{buildroot}%{_udevrulesdir}/50-usb-a
 
 
 %changelog
+* Tue Feb 10 2026 Damian Wrobel <dwrobel@ertelnet.rybnik.pl> - 2.3.4-5.20260210gitd017f861049b
+- Rebuild for new Fedora
+- Migrate to new python marcos
+
 * Fri Oct 17 2025 Damian Wrobel <dwrobel@ertelnet.rybnik.pl> - 2.3.4-4.20250117git1336b21511b5
 - Rebuild for new Fedora
 
