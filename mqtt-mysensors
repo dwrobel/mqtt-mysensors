@@ -224,24 +224,29 @@ while True:
             pass
 
     # client.publish(topic_prefix+"/0/255/I_GATEWAY_READY", "MQTT Gateway startup complete.", retain=True)
+
+    rx_buffer = b''
+
     while rc == 0:
         try:
-            rv: str = ''
+            while ser.in_waiting > 0 or rx_buffer:
+                rv: str = ''
 
-            while ser.in_waiting > 0:
-                ch: str = ''
+                rx_buffer += ser.read_all()
 
-                try:
-                    ch = (ser.read(1)).decode()
-                except UnicodeDecodeError:
-                    continue
+                newline_pos = rx_buffer.find(b'\n')
 
-                rv += ch
+                if newline_pos >= 0:
+                    line = rx_buffer[:newline_pos + 1]
 
-                if ch != '\n':
-                    continue
+                    rx_buffer = rx_buffer[newline_pos + 1:]
 
-                rv = rv.rstrip()
+                    try:
+                        rv = line.decode()
+                    except UnicodeDecodeError:
+                        continue
+
+                    rv = rv.rstrip()
 
                 if M_INFO > 1:
                     print("      Serial in |" + rv + "|", flush=True)
@@ -283,7 +288,6 @@ while True:
 
                     client.publish(mytopic, payload=payload, retain=True)
 
-                rv = ''
             rc = client.loop()
         except KeyboardInterrupt:
             sys.exit(1)

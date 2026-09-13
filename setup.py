@@ -2,7 +2,7 @@
 #
 # Provides MySensors MQTT service using a mysensors serial gateway version 2.3
 #
-# Copyright (C) 2018-2019 Damian Wrobel <dwrobel@ertelnet.rybnik.pl>
+# Copyright (C) 2018-2026 Damian Wrobel <dwrobel@ertelnet.rybnik.pl>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@ from setuptools import setup
 setup(
     name='mqtt-mysensors',
 
-    version='2.3.4',
+    version='2.3.5',
 
     description='MySensors MQTT service using a mysensors serial gateway',
 
