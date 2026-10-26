@@ -1,11 +1,11 @@
-%global date 20260210
-%global commit0 d017f861049bb743e0128c97d71ca8d86528d862
+%global date 20260813
+%global commit0 b3498ad444499b57b5e5714fb3833deb49f57c6d
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:12})
 %global the_owner dwrobel
 
 Name:           mqtt-mysensors
-Version:        2.3.4
-Release:        6.%{date}git%{shortcommit0}%{?dist}
+Version:        2.3.5
+Release:        1.%{date}git%{shortcommit0}%{?dist}
 Summary:        MQTT service for mysensors serial gateway
 License:        GPLv3+
 Url:            https://github.com/%{the_owner}/%{name}
@@ -79,6 +79,9 @@ install -D -p -m 0644 50-usb-arduino.rules %{buildroot}%{_udevrulesdir}/50-usb-a
 
 
 %changelog
+* Mon Oct 26 2026 Damian Wrobel <dwrobel@ertelnet.rybnik.pl> - 2.3.5-1.20260813gitb3498ad44449
+- New version. Fixes serial port data loss.
+
 * Wed Sep 02 2026 Damian Wrobel <dwrobel@ertelnet.rybnik.pl> - 2.3.4-6.20260210gitd017f861049b
 - Rebuilt for new Fedora
 
